@@ -5,9 +5,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.prueba</groupId>
-	<artifactId>prueba-tecnica</artifactId>
+	<artifactId>bank-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>prueba-tecnica</name>
+	<name>bank-api</name>
 	<description>Prueba técnica para NTTDATA nivel Junior</description>
 
 	<parent>
@@ -47,8 +47,8 @@
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>RELEASE</version>
-			<scope>compile</scope>
+			<version>7.10.2</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -57,9 +57,18 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring-boot.version}</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>com.example.bank_api.BankApiApplication</mainClass>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>
