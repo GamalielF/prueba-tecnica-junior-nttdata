@@ -8,7 +8,7 @@ import com.example.bank_api.repository.MovimientoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,35 +16,61 @@ import java.util.Optional;
 public class MovimientoService {
     @Autowired
     private MovimientoRepository movimientoRepository;
-
     @Autowired
     private CuentaRepository cuentaRepository;
 
-    public List<Movimiento> findAll() {
-        return movimientoRepository.findAll();
-    }
+    public Movimiento createMovimiento(Movimiento movimiento) {
+        // Obtener el ID de la cuenta desde el JSON
+        if (movimiento.getCuenta() == null || movimiento.getCuenta().getId() == null) {
+            throw new IllegalArgumentException("La cuenta es requerida");
+        }
+        Long cuentaId = movimiento.getCuenta().getId();
 
-    public Optional<Movimiento> findById(Long id) {
-        return movimientoRepository.findById(id);
-    }
+        // Buscar la cuenta en la base de datos
+        Optional<Cuenta> cuentaOptional = cuentaRepository.findById(cuentaId);
+        if (!cuentaOptional.isPresent()) {
+            throw new IllegalArgumentException("Cuenta con ID " + cuentaId + " no encontrada");
+        }
+        Cuenta cuenta = cuentaOptional.get();
 
-    public Movimiento save(Movimiento movimiento) {
-        Cuenta cuenta = movimiento.getCuenta();
+        // Validar saldo (F3)
         double nuevoSaldo = cuenta.getSaldoInicial() + movimiento.getValor();
-
         if (nuevoSaldo < 0) {
             throw new SaldoNoDisponibleException("Saldo no disponible");
         }
 
+        // Actualizar saldo de la cuenta (F2)
         cuenta.setSaldoInicial(nuevoSaldo);
         cuentaRepository.save(cuenta);
 
-        movimiento.setFecha(LocalDateTime.now());
+        // Registrar movimiento (F2)
+        movimiento.setCuenta(cuenta); // Asegurar que el movimiento esté asociado a la cuenta cargada
+        movimiento.setFecha(LocalDate.now());
         movimiento.setSaldo(nuevoSaldo);
         return movimientoRepository.save(movimiento);
     }
 
-    public void deleteById(Long id) {
-        movimientoRepository.deleteById(id);
+    public List<Movimiento> getAllMovimientos() {
+        return movimientoRepository.findAll();
+    }
+
+    public Optional<Movimiento> getMovimientoById(Long id) {
+        return movimientoRepository.findById(id);
+    }
+
+    public Movimiento updateMovimiento(Long id, Movimiento movimiento) {
+        if (movimientoRepository.existsById(id)) {
+            movimiento.setId(id);
+            return movimientoRepository.save(movimiento);
+        }
+        return null;
+    }
+
+    public boolean deleteMovimiento(Long id) {
+        if (movimientoRepository.existsById(id)) {
+            movimientoRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

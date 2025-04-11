@@ -1,16 +1,35 @@
 package com.example.bank_api.model;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.Entity;
 
-@Data
 @Entity
-@DiscriminatorValue("CLIENTE")
 public class Cliente extends Persona {
-    @Column(unique = true, nullable = false)
-    private String clienteId;
-
+    private String clientId;
     private String contrasena;
+    private boolean estado;
 
-    private Boolean estado;
+    // Getters y Setters
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
+    }
+
+    public boolean isEstado() {
+        return estado;
+    }
+
+    public void setEstado(boolean estado) {
+        this.estado = estado;
+    }
 }

@@ -13,19 +13,31 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public List<Cliente> findAll() {
-        return clienteRepository.findAll();
-    }
-
-    public Optional<Cliente> findById(String id) {
-        return clienteRepository.findById(id);
-    }
-
-    public Cliente save(Cliente cliente) {
+    public Cliente createCliente(Cliente cliente) {
         return clienteRepository.save(cliente);
     }
 
-    public void deleteById(String id) {
-        clienteRepository.deleteById(id);
+    public List<Cliente> getAllClientes() {
+        return clienteRepository.findAll();
+    }
+
+    public Optional<Cliente> getClienteById(Long id) {
+        return clienteRepository.findById(id);
+    }
+
+    public Cliente updateCliente(Long id, Cliente cliente) {
+        if (clienteRepository.existsById(id)) {
+            cliente.setId(id);
+            return clienteRepository.save(cliente);
+        }
+        return null;
+    }
+
+    public boolean deleteCliente(Long id) {
+        if (clienteRepository.existsById(id)) {
+            clienteRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }

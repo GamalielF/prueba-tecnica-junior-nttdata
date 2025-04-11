@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/movimientos")
@@ -14,39 +15,31 @@ public class MovimientoController {
     @Autowired
     private MovimientoService movimientoService;
 
+    @PostMapping
+    public ResponseEntity<Movimiento> createMovimiento(@RequestBody Movimiento movimiento) {
+        return ResponseEntity.ok(movimientoService.createMovimiento(movimiento));
+    }
+
     @GetMapping
-    public List<Movimiento> getAllMovimientos() {
-        return movimientoService.findAll();
+    public ResponseEntity<List<Movimiento>> getAllMovimientos() {
+        return ResponseEntity.ok(movimientoService.getAllMovimientos());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Movimiento> getMovimientoById(@PathVariable Long id) {
-        return movimientoService.findById(id)
-                .map(ResponseEntity::ok)
+        Optional<Movimiento> movimiento = movimientoService.getMovimientoById(id);
+        return movimiento.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @PostMapping
-    public Movimiento createMovimiento(@RequestBody Movimiento movimiento) {
-        return movimientoService.save(movimiento);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Movimiento> updateMovimiento(@PathVariable Long id, @RequestBody Movimiento movimiento) {
-        return movimientoService.findById(id)
-                .map(existing -> {
-                    movimiento.setId(id);
-                    return ResponseEntity.ok(movimientoService.save(movimiento));
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Movimiento updated = movimientoService.updateMovimiento(id, movimiento);
+        return updated != null ? ResponseEntity.ok(updated) : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMovimiento(@PathVariable Long id) {
-        if (movimientoService.findById(id).isPresent()) {
-            movimientoService.deleteById(id);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
+        return movimientoService.deleteMovimiento(id) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }
