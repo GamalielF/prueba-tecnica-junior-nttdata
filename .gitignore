@@ -1,0 +1,20 @@
+# Archivos de Java/Spring Boot
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Archivos de IntelliJ
+.idea/
+*.iml
+
+# Archivos de configuración local
+application.properties
+application.yml
+
+# Archivos de logs
+*.log
+
+# Carpeta de Docker (si aplica)
+docker-compose.yml
